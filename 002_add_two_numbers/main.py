@@ -12,6 +12,8 @@ class Solution(object):
         ans = ListNode(None)
         cur = ans
         over = 0
+        # NOTE: leetcode did not have a testcase for different
+        # length ListNode case
         while(l1 is not None or l2 is not None or over > 0):
             l1val, l2val = 0, 0
             if l1 is None:
