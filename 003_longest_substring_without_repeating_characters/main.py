@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 
 class Solution(object):
@@ -8,13 +8,14 @@ class Solution(object):
         :type s: str
         :rtype: int
         """
-        return naive_recursive_solution(s)
+        #return divide_conquer_solution(s)
+        return sliding_window_solution(s)
 
 
 solutions = dict()
 
 
-def naive_recursive_solution(s):
+def divide_conquer_solution(s):
     if s == '' or len(s) == 1:
         return len(s)
 
@@ -27,8 +28,8 @@ def naive_recursive_solution(s):
         match = s[i]
         for j in range(i + 1, len(s)):
             if match == s[j]:
-                ans1 = naive_recursive_solution(s[:j])
-                ans2 = naive_recursive_solution(s[i + 1:])
+                ans1 = divide_conquer_solution(s[:j])
+                ans2 = divide_conquer_solution(s[i + 1:])
 
                 # return largest of the duplicates
                 if ans1 < ans2:
@@ -41,13 +42,32 @@ def naive_recursive_solution(s):
     solutions[s] = len(s)
     return len(s)
 
+
+def sliding_window_solution(s):
+    if s == '' or len(s) == 1:
+        return len(s)
+
+    i = 0
+    maxlength = 1
+    letters = dict()
+    for j in range(0, len(s)):
+        if s[j] in letters:
+            i = max(letters[s[j]] + 1, i)
+
+        maxlength = max(j - i + 1, maxlength)
+        letters[s[j]] = j
+
+    return maxlength
+
+
 if __name__ == '__main__':
     s = Solution()
-    print(s.lengthOfLongestSubstring(''))           # prints ''
-    print(s.lengthOfLongestSubstring('a'))          # prints 'a'
-    print(s.lengthOfLongestSubstring('aba'))        # prints 'ab'
-    print(s.lengthOfLongestSubstring('abcadefg'))   # prints 'bcadefg'
-    print(s.lengthOfLongestSubstring('abcabefg'))   # prints 'cadefg'
-    print(s.lengthOfLongestSubstring('dcabcebade'))  # prints 'abceb'
+    print(s.lengthOfLongestSubstring(''))           # returns 0
+    print(s.lengthOfLongestSubstring('a'))          # returns 1
+    print(s.lengthOfLongestSubstring('aba'))        # returns 2
+    print(s.lengthOfLongestSubstring('abcadefg'))   # returns 7
+    print(s.lengthOfLongestSubstring('abcabefg'))   # returns 6
+    print(s.lengthOfLongestSubstring('dcabcebade'))  # returns 5
+    print(s.lengthOfLongestSubstring('abcabcbb'))  # returns 3
     print(s.lengthOfLongestSubstring(
-        'zbexrampetvhqnddjeqvuygpnkazqfrpjvoaxdpcwmjobmskskfojnewxgxnnofwltwjwnnvbwjckdmeouuzhyvhg'))
+        'zbexrampetvhqnddjeqvuygpnkazqfrpjvoaxdpcwmjobmskskfojnewxgxnnofwltwjwnnvbwjckdmeouuzhyvhg'))  # returns 13
