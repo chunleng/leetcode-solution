@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # https://leetcode.com/problems/longest-palindromic-substring/
 
-import math
-
 class Solution(object):
     def longestPalindrome(self, s):
         """
@@ -13,82 +11,58 @@ class Solution(object):
         if s is None or s == '':
             return None
 
-        if len(s) == 1:
-            return s
+        start=0
+        end=0
+        len_ans = end - start
 
-        if len(s) == 2:
-            if s[0] == s[1]:
-                return s
-            else:
-                return s[0]
+        for i in xrange(0,len(s)):
+            start1,end1 = self.palindrome_around(i, i, s)
+            start2,end2 = self.palindrome_around(i, i+1, s)
 
-        # Init as minimum possible
-        ans = s[0]
+            len_can1 = end1-start1
+            len_can2 = end2-start2
 
-        add_val = 1
-        dir = -1
-        curr_ind = len(s)/2 # Get middle
-        odd = len(s) % 2 == 1;
+            if len_can1 > len_can2:
+                if len_can1 > len_ans:
+                    start = start1
+                    end = end1
+                    len_ans = len_can1
+            elif len_can2 > len_ans:
+                start = start2
+                end = end2
+                len_ans = len_can2
 
-        # Loop by going through the variable closer to centre
-        for i in xrange(0,len(s)-2):
-            max_match = len(s) - 2 * (math.ceil(i / 2.0)) if odd else len(s) - 1 - 2 * (i / 2)
-            middle_case = True
-            lower_index = curr_ind - 1
-            upper_index = curr_ind + 1
-
-            for j in xrange(1, int(math.ceil(max_match/2.0) + 1)):
-                if (lower_index >= 0 and upper_index < len(s) and
-                    s[lower_index] == s[upper_index]):
-                    temp = s[lower_index: upper_index + 1]
-                    if (len(temp) > len(ans)):
-                        print(j)
-                        ans = temp
-                    if middle_case:
-                        if s[lower_index] != s[lower_index+1]:
-                            middle_case = False
-                    lower_index -= 1
-                    upper_index += 1
-                else:
-                    if middle_case:
-                        if (lower_index >= 0 and
-                            s[lower_index] == s[lower_index+1]):
-                            if (j * 2 > len(ans)):
-                                ans = s[lower_index: upper_index]
-                            lower_index -= 1
-                        elif (upper_index < len(s) and 
-                              s[upper_index-1] == s[upper_index]):
-                            if (j * 2 > len(ans)):
-                                ans = s[lower_index+1:upper_index+1]
-                            upper_index += 1
-                        else:
-                            middle_case = False
-                        continue
-                    break
-
-            # Terminate if current loop matches the max possible length
-            if len(ans) >= max_match - 1:
-                break
-
-            # Pick curr_ind
-            curr_ind = curr_ind + (add_val * dir)
-            add_val = add_val + 1
-            dir = dir * -1
+        return s[start:end+1]
 
 
-        return ans
+    def palindrome_around(self, start, end, phrase):
+        if (end >= len(phrase)
+            or phrase[start] != phrase[end]):
+            return 0,-1
+
+        loop_ceil = min(start, len(phrase) - end - 1)
+
+        for i in xrange(loop_ceil):
+            if phrase[start-i-1] != phrase[end+i+1]:
+                return (start-i, end+i)
+
+        return start-loop_ceil,end+loop_ceil
+
 
 
 if __name__ == '__main__':
     s = Solution()
-    print(s.longestPalindrome('babad'))
-    print(s.longestPalindrome('ababad'))
-    print(s.longestPalindrome('bb'))
-    print(s.longestPalindrome('bbbb'))
-    print(s.longestPalindrome('cbbd'))
-    print(s.longestPalindrome('cbbbbd'))
-    print(s.longestPalindrome('cbbbbbbd'))
-    print(s.longestPalindrome('abbcbcda'))
-    print(s.longestPalindrome('abdbcbcda'))
-    print(s.longestPalindrome('rgczcpratwyqxaszbuwwcadruayhasynuxnakpmsyhxzlnxmdtsqqlmwnbxvmgvllafrpmlfuqpbhjddmhmbcgmlyeypkfpreddyencsdmgxysctpubvgeedhurvizgqxclhpfrvxggrowaynrtuwvvvwnqlowdihtrdzjffrgoeqivnprdnpvfjuhycpfydjcpfcnkpyujljiesmuxhtizzvwhvpqylvcirwqsmpptyhcqybstsfgjadicwzycswwmpluvzqdvnhkcofptqrzgjqtbvbdxylrylinspncrkxclykccbwridpqckstxdjawvziucrswpsfmisqiozworibeycuarcidbljslwbalcemgymnsxfziattdylrulwrybzztoxhevsdnvvljfzzrgcmagshucoalfiuapgzpqgjjgqsmcvtdsvehewrvtkeqwgmatqdpwlayjcxcavjmgpdyklrjcqvxjqbjucfubgmgpkfdxznkhcejscymuildfnuxwmuklntnyycdcscioimenaeohgpbcpogyifcsatfxeslstkjclauqmywacizyapxlgtcchlxkvygzeucwalhvhbwkvbceqajstxzzppcxoanhyfkgwaelsfdeeviqogjpresnoacegfeejyychabkhszcokdxpaqrprwfdahjqkfptwpeykgumyemgkccynxuvbdpjlrbgqtcqulxodurugofuwzudnhgxdrbbxtrvdnlodyhsifvyspejenpdckevzqrexplpcqtwtxlimfrsjumiygqeemhihcxyngsemcolrnlyhqlbqbcestadoxtrdvcgucntjnfavylip'))
+    s.longestPalindrome('rgczcpratwyqxaszbuwwcadruayhasynuxnakpmsyhxzlnxmdtsqqlmwnbxvmgvllafrpmlfuqpbhjddmhmbcgmlyeypkfpreddyencsdmgxysctpubvgeedhurvizgqxclhpfrvxggrowaynrtuwvvvwnqlowdihtrdzjffrgoeqivnprdnpvfjuhycpfydjcpfcnkpyujljiesmuxhtizzvwhvpqylvcirwqsmpptyhcqybstsfgjadicwzycswwmpluvzqdvnhkcofptqrzgjqtbvbdxylrylinspncrkxclykccbwridpqckstxdjawvziucrswpsfmisqiozworibeycuarcidbljslwbalcemgymnsxfziattdylrulwrybzztoxhevsdnvvljfzzrgcmagshucoalfiuapgzpqgjjgqsmcvtdsvehewrvtkeqwgmatqdpwlayjcxcavjmgpdyklrjcqvxjqbjucfubgmgpkfdxznkhcejscymuildfnuxwmuklntnyycdcscioimenaeohgpbcpogyifcsatfxeslstkjclauqmywacizyapxlgtcchlxkvygzeucwalhvhbwkvbceqajstxzzppcxoanhyfkgwaelsfdeeviqogjpresnoacegfeejyychabkhszcokdxpaqrprwfdahjqkfptwpeykgumyemgkccynxuvbdpjlrbgqtcqulxodurugofuwzudnhgxdrbbxtrvdnlodyhsifvyspejenpdckevzqrexplpcqtwtxlimfrsjumiygqeemhihcxyngsemcolrnlyhqlbqbcestadoxtrdvcgucntjnfavylip')
+
+    if False:
+        print(s.longestPalindrome('babad'))
+        print(s.longestPalindrome('ababad'))
+        print(s.longestPalindrome('bb'))
+        print(s.longestPalindrome('bbbb'))
+        print(s.longestPalindrome('cbbd'))
+        print(s.longestPalindrome('cbbbbd'))
+        print(s.longestPalindrome('cbbbbbbd'))
+        print(s.longestPalindrome('abbcbcda'))
+        print(s.longestPalindrome('abdbcbcda'))
+        print(s.longestPalindrome('rgczcpratwyqxaszbuwwcadruayhasynuxnakpmsyhxzlnxmdtsqqlmwnbxvmgvllafrpmlfuqpbhjddmhmbcgmlyeypkfpreddyencsdmgxysctpubvgeedhurvizgqxclhpfrvxggrowaynrtuwvvvwnqlowdihtrdzjffrgoeqivnprdnpvfjuhycpfydjcpfcnkpyujljiesmuxhtizzvwhvpqylvcirwqsmpptyhcqybstsfgjadicwzycswwmpluvzqdvnhkcofptqrzgjqtbvbdxylrylinspncrkxclykccbwridpqckstxdjawvziucrswpsfmisqiozworibeycuarcidbljslwbalcemgymnsxfziattdylrulwrybzztoxhevsdnvvljfzzrgcmagshucoalfiuapgzpqgjjgqsmcvtdsvehewrvtkeqwgmatqdpwlayjcxcavjmgpdyklrjcqvxjqbjucfubgmgpkfdxznkhcejscymuildfnuxwmuklntnyycdcscioimenaeohgpbcpogyifcsatfxeslstkjclauqmywacizyapxlgtcchlxkvygzeucwalhvhbwkvbceqajstxzzppcxoanhyfkgwaelsfdeeviqogjpresnoacegfeejyychabkhszcokdxpaqrprwfdahjqkfptwpeykgumyemgkccynxuvbdpjlrbgqtcqulxodurugofuwzudnhgxdrbbxtrvdnlodyhsifvyspejenpdckevzqrexplpcqtwtxlimfrsjumiygqeemhihcxyngsemcolrnlyhqlbqbcestadoxtrdvcgucntjnfavylip'))
 
