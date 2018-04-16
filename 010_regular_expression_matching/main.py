@@ -3,6 +3,8 @@
 
 
 class Solution(object):
+    def __init__(self):
+        self.cache = {}
 
     def isMatch(self, s, p):
         """
@@ -40,6 +42,8 @@ class Solution(object):
 
 
     def match(self, p, p_i , s, s_i):
+        if (p_i, s_i) in self.cache:
+            return False # self.cache[(p_i, s_i)]
         if p_i == len(p) and s_i == len(s):
             return True
         elif s_i == len(s):
@@ -52,21 +56,25 @@ class Solution(object):
 
         if p[p_i] in (s[s_i], '.'):
             # definitely match one digit
-            return self.match(p, p_i+1, s, s_i+1)
+            self.cache[(p_i, s_i)] = self.match(p, p_i+1, s, s_i+1)
+            return self.cache[(p_i, s_i)]
         elif p[p_i] in (s[s_i]+'*', '.*'):
             # for this case, we can: 
             # * match and next pattern
             # * match and continue pattern
             # * don't match
-            return self.match(p, p_i+1, s, s_i+1) or \
+            self.cache[(p_i, s_i)] = self.match(p, p_i+1, s, s_i+1) or \
                 self.match(p, p_i, s, s_i+1) or \
                 self.match(p, p_i+1, s, s_i)
+            return self.cache[(p_i, s_i)]
         elif p[p_i].endswith('*'):
             # continue matching because `*` is optional
-            return self.match(p, p_i+1, s, s_i)
+            self.cache[(p_i, s_i)] = self.match(p, p_i+1, s, s_i)
+            return self.cache[(p_i, s_i)]
         else:
             # different
-            return False
+            self.cache[(p_i, s_i)] = False
+            return self.cache[(p_i, s_i)]
 
 def printTest(s, p, ans):
     out = Solution().isMatch(s, p)
