@@ -8,14 +8,47 @@ class Solution(object):
         :type heights: List[int]
         :rtype: int
         """
+        # The intuition of the solution base on the following logic
+        # ==========================================================
+        # Statement: given current vertical lines chosen, any line that is
+        #            shorter than the current vertical lines will never hold
+        #            more water
+        # Reason: width is shorter and height will not increase
+        #
+        # By above proposition,
+        # - When current lines are different length, replace the shorter line
+        # - When current lines are same, replace both
+
+        start = 0
+        end = len(heights) - 1
         currentMax = 0
-        for i in range(len(heights)):
-            for j in range(i+1, len(heights)):
-                tmp = self.calculateHeight(heights, i, j)
-                if tmp > currentMax:
-                    currentMax = tmp
+
+        while start != -1 and end != -1:
+            tmp = self.calculateHeight(heights, start, end)
+            if tmp > currentMax:
+                currentMax = tmp
+
+            # select next candidate
+            if heights[start] == heights[end]:
+                start = self.findNext(heights, start, end)
+                end = self.findNext(heights, end, start)
+            elif heights[start] > heights[end]:
+                end = self.findNext(heights, end, start)
+            else:
+                start = self.findNext(heights, start, end)
 
         return currentMax
+
+    def findNext(self, heights, start, end):
+        direction = 1
+        if start > end:
+            direction = -1
+
+        for i in range(start, end, direction):
+            if heights[i] > heights[start]:
+                return i
+        
+        return -1
 
     def calculateHeight(self, heights, x, y):
         """Get the container when i is x and y"""
@@ -37,4 +70,9 @@ if __name__ == '__main__':
     printTest([1, 1, 1], 2)  # basic more than one across case
     printTest([1, 4, 4, 1], 4)  # bigger middle case
     printTest([4, 1, 1, 4], 12)  # bigger edge case
+
+    # The test below are for testing the inward shifting logic
+    printTest([5, 5, 1], 5)  # shift right
+    printTest([1, 5, 5], 5)  # shift left
+    printTest([1, 5, 5, 1], 5)  # shift both
 
